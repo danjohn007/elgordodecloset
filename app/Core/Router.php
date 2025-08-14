@@ -107,7 +107,22 @@ class Router
     private function executeMiddleware($middleware)
     {
         if (is_string($middleware)) {
-            $middlewareClass = "App\\Helpers\\{$middleware}";
+            switch ($middleware) {
+                case 'Auth':
+                    $middlewareClass = "App\\Helpers\\AuthMiddleware";
+                    break;
+                case 'CSRF':
+                    return \App\Helpers\CSRF::handle();
+                case 'RestaurantAdmin':
+                    $middlewareClass = "App\\Helpers\\RestaurantAdminMiddleware";
+                    break;
+                case 'SuperAdmin':
+                    $middlewareClass = "App\\Helpers\\SuperAdminMiddleware";
+                    break;
+                default:
+                    $middlewareClass = "App\\Helpers\\{$middleware}";
+            }
+            
             if (class_exists($middlewareClass)) {
                 return (new $middlewareClass)->handle();
             }
